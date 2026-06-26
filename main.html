@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Protected Page</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f4ef;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1a1a18;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid #e0ded6;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 460px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    }
+
+    .lock-wrap {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #eeedfe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .lock-wrap i { font-size: 30px; color: #534ab7; }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a18;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #888780;
+      margin-top: -0.75rem;
+    }
+
+    .pin-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .pin-box {
+      width: 40px;
+      height: 52px;
+      border: 1.5px solid #d3d1c7;
+      border-radius: 10px;
+      background: #f5f4ef;
+      font-size: 22px;
+      font-weight: 600;
+      text-align: center;
+      color: #1a1a18;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+      font-family: 'Courier New', monospace;
+    }
+    .pin-box:focus {
+      border-color: #534ab7;
+      background: #fff;
+      box-shadow: 0 0 0 3px #eeedfe;
+    }
+    .pin-box.filled {
+      border-color: #7f77dd;
+      background: #fff;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: #534ab7;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+      letter-spacing: 0.01em;
+    }
+    .btn:hover { background: #3c3489; }
+    .btn:active { transform: scale(0.98); }
+
+    .msg {
+      font-size: 13px;
+      font-weight: 500;
+      min-height: 20px;
+      text-align: center;
+    }
+    .msg.err { color: #a32d2d; }
+    .msg.ok  { color: #0f6e56; }
+
+    /* --- Content (unlocked) --- */
+    #content {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      text-align: center;
+    }
+    #content.show { display: flex; }
+
+    .check-wrap {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #e1f5ee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .check-wrap i { font-size: 32px; color: #0f6e56; }
+
+    .content-box {
+      background: #f5f4ef;
+      border-radius: 12px;
+      border: 1px solid #e0ded6;
+      padding: 1.25rem 1.5rem;
+      width: 100%;
+      font-size: 14px;
+      color: #5f5e5a;
+      line-height: 1.6;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1.5px solid #d3d1c7;
+      color: #5f5e5a;
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-ghost:hover { background: #f5f4ef; }
+
+    @media (prefers-color-scheme: dark) {
+      body { background: #1c1c1a; color: #e8e6df; }
+      .card { background: #2a2a27; border-color: #3a3a36; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
+      .pin-box { background: #1c1c1a; border-color: #444441; color: #e8e6df; }
+      .pin-box:focus { background: #2a2a27; }
+      .pin-box.filled { background: #2a2a27; }
+      .content-box { background: #1c1c1a; border-color: #3a3a36; color: #888780; }
+      .btn-ghost { border-color: #444441; color: #888780; }
+      .btn-ghost:hover { background: #2a2a27; }
+      h1 { color: #e8e6df; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- LOCKED STATE -->
+  <div id="gate" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:1.25rem;">
+    <div class="lock-wrap"><i class="ti ti-lock"></i></div>
+    <h1>¡¡¡¡¡Página Protegida!!!</h1>
+    <p class="subtitle">Ingresa el código de 9 digitos</p>
+
+    <div class="pin-row" id="pinRow">
+      <input class="pin-box" maxlength="1" inputmode="numeric" data-i="0">
+      <input class="pin-box" maxlength="1" inputmode="numeric" data-i="1">
+      <input class="pin-box" maxlength="1" inputmode="numeric" data-i="2">
+      <input class="pin-box" maxlength="1" inputmode="numeric" data-i="3">
+      <input class="pin-box" maxlength="1" inputmode="numeric" data-i="4">
+      <input class="pin-box" maxlength="1" inputmode="numeric" data-i="5">
+      <input class="pin-box" maxlength="1" inputmode="numeric" data-i="6">
+      <input class="pin-box" maxlength="1" inputmode="numeric" data-i="7">
+      <input class="pin-box" maxlength="1" inputmode="numeric" data-i="8">
+    </div>
+
+    <button class="btn" id="unlockBtn">Unlock</button>
+    <p class="msg" id="msg"></p>
+  </div>
+
+  <!-- UNLOCKED STATE -->
+  <div id="content">
+    <div class="check-wrap"><i class="ti ti-lock-open"></i></div>
+    <h1>Felicidadessss!!!!</h1>
+    <div class="content-box">
+      Ahora puedes ver el contenido protegido.
+    </div>
+    <div class="content-box">
+      Te amo tanto que si fuera a la luna le pondría tu nombre al 
+      descubrimiento de un nuevo cráter :).
+    </div>
+    <button class="btn-ghost" id="lockBtn">🔒 Lock again</button>
+  </div>
+
+</div>
+
+<script>
+  const PASSWORD = "123456789"; // ← change this
+
+  const boxes = [...document.querySelectorAll(".pin-box")];
+  const msg   = document.getElementById("msg");
+  const gate  = document.getElementById("gate");
+  const content = document.getElementById("content");
+
+  boxes.forEach((box, i) => {
+    box.addEventListener("input", e => {
+      box.value = e.target.value.replace(/\D/g,"").slice(-1);
+      box.classList.toggle("filled", !!box.value);
+      if (box.value && i < 8) boxes[i+1].focus();
+    });
+    box.addEventListener("keydown", e => {
+      if (e.key === "Backspace" && !box.value && i > 0) {
+        boxes[i-1].value = "";
+        boxes[i-1].classList.remove("filled");
+        boxes[i-1].focus();
+      }
+      if (e.key === "Enter") unlock();
+    });
+    box.addEventListener("paste", e => {
+      e.preventDefault();
+      const txt = (e.clipboardData||window.clipboardData).getData("text").replace(/\D/g,"");
+      [...txt].slice(0,9).forEach((ch,j) => {
+        if (boxes[i+j]) { boxes[i+j].value = ch; boxes[i+j].classList.add("filled"); }
+      });
+      boxes[Math.min(i+txt.length,8)].focus();
+    });
+  });
+
+  function getPin() { return boxes.map(b=>b.value).join(""); }
+
+  function unlock() {
+    const pin = getPin();
+    if (pin.length < 9) { showMsg("Fill all 9 digits", "err"); return; }
+    if (pin === PASSWORD) {
+      gate.style.display = "none";
+      content.classList.add("show");
+      msg.textContent = "";
+    } else {
+      showMsg("Incorrect password — try again", "err");
+      boxes.forEach(b => { b.value = ""; b.classList.remove("filled"); });
+      boxes[0].focus();
+    }
+  }
+
+  function showMsg(text, type) {
+    msg.textContent = text;
+    msg.className = "msg " + type;
+  }
+
+  document.getElementById("unlockBtn").addEventListener("click", unlock);
+  document.getElementById("lockBtn").addEventListener("click", () => {
+    content.classList.remove("show");
+    gate.style.display = "flex";
+    boxes.forEach(b => { b.value = ""; b.classList.remove("filled"); });
+    boxes[0].focus();
+  });
+
+  boxes[0].focus();
+</script>
+</body>
+</html>
